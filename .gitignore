@@ -20,3 +20,6 @@ latest/TP/
 # Lazarus
 lib/
 *.lps
+
+# Turbo Pascal
+TP/
