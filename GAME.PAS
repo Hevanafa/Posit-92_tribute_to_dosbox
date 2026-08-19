@@ -4,12 +4,11 @@ program Game;
 
 uses
   CRT, DOS,
-  P92Core, Logger, P92STR, P92TEX, Timing, P92VGA,
-  P92KBD, P92Mouse;
+  P92Core, Logger, BMFont, P92STR, P92TEX, Timing, P92VGA, P92KBD, P92Mouse;
 
 var
   { Asset variables }
-  { DosuEXE: array[0..1] of TTexture; }
+  P92SansFont: TBMFont;
   SpecimenP92: array[0..1] of TTexture;
 
   { Game state variables }
@@ -18,9 +17,9 @@ var
 
 procedure OnPreload; far;
 begin
-  { Load assets here }
-  LoadTex(SpecimenP92[0], 'IMG/SPP92_1.BMP');
-  LoadTex(SpecimenP92[1], 'IMG/SPP92_2.BMP');
+  LoadTex(SpecimenP92[0], 'IMG\SPP92_1.BMP');
+  LoadTex(SpecimenP92[1], 'IMG\SPP92_2.BMP');
+  LoadBMFont(P92SansFont, 'FONTS\P92SANS.TXT');
 end;
 
 procedure OnReady; far;
@@ -47,6 +46,9 @@ begin
 end;
 
 procedure Draw; far;
+var
+  s: string;
+  w: integer;
 begin
   Cls($4F);
 
@@ -55,9 +57,10 @@ begin
   else
     Spr(SpecimenP92[1], 148, 76);
 
-  Print('Hello world!', 160-48, 120, 15);
+  s := 'Hello world!';
+  w := MeasureBMFont(P92SansFont, s);
+  PrintBMFont(P92SansFont, s, (VGAWidth - w) div 2, 120);
 end;
-
 
 var
   appConfig: TP92AppConfig;
