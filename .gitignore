@@ -1,0 +1,22 @@
+# Debugging stuff
+backup/
+*.BAK
+*.BK1
+LOG.TXT
+
+# Compiled files
+*.EXE
+*.TPU
+boilerplate/UNITS/
+
+# Turbo Pascal
+latest/TP/
+
+# Free Pascal Compiler
+*.a
+*.o
+*.ppu
+
+# Lazarus
+lib/
+*.lps
