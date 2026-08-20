@@ -5,7 +5,7 @@ program Game;
 uses
   CRT, DOS,
   P92Core, Conv, Logger, BMFont, P92Geom, P92STR, P92TEX, Timing, P92VGA, P92KBD, P92Mouse,
-  UEntity;
+  UEntity, UIntro;
 
 const
   MoveSpeed = 100;
