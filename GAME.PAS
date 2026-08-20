@@ -9,8 +9,12 @@ uses
 type
   TEntityType = (
     EntityTypeNothing,
+
+    { Format: species, class }
     EntityTypeSlimeGirl,
-    EntityTypeCultist
+    EntityTypeCultist,
+    EntityTypeSlimeCultist,
+    EntityTypeSlimeQueen
   );
 
   TEntity = record
