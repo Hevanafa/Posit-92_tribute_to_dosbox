@@ -76,8 +76,8 @@ begin
   LoadTex(texSpecimenP92[1], 'IMG\SPP92_2.BMP');
 
   LoadTex(texPosit92Logo, 'IMG\POSIT92.BMP');
-  LoadTex(texLazarusLogo, 'IMG\POSIT92.BMP');
-  LoadTex(texTurboPascal, 'IMG\POSIT92.BMP');
+  LoadTex(texLazarusLogo, 'IMG\LAZARUS.BMP');
+  LoadTex(texTurboPascal, 'IMG\TURBO.BMP');
 
   LoadBMFont(P92SansFont, 'FONTS\P92SANS.TXT');
 end;
