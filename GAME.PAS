@@ -108,6 +108,17 @@ begin
   PrintBMFont(P92SansFont, text, x, y)
 end;
 
+{ Forwards call to PrintDefault }
+procedure DebugPhysicsBody(const body: TPhysicsBody; const x, y: integer);
+begin
+  PrintDefault(
+    '{x=' + F32Str(body.x)
+    + ', y=' + F32Str(body.y)
+    + ', vx=' + f32str(body.vx)
+    + ', vy=' + f32str(body.vy)
+    + '}', x, y)
+end;
+
 procedure Draw; far;
 var
   s: string;
@@ -128,13 +139,7 @@ begin
 
   DrawPhysicsBody(entities[playerEntityIdx].body, $0C);
 
-  with entities[playerEntityIdx] do
-    PrintDefault(
-      '{x=' + F32Str(body.x)
-      + ', y=' + F32Str(body.y)
-      + ', vx=' + f32str(body.vx)
-      + ', vy=' + f32str(body.vy)
-      + '}', 10, 25);
+  DebugPhysicsBody(entities[playerEntityIdx].body, 10, 25);
 
   s := 'Hello world!';
   w := MeasureBMFont(P92SansFont, s);
