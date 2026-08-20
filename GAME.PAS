@@ -4,24 +4,8 @@ program Game;
 
 uses
   CRT, DOS,
-  P92Core, Conv, Logger, BMFont, P92Geom, P92STR, P92TEX, Timing, P92VGA, P92KBD, P92Mouse;
-
-type
-  TEntityType = (
-    EntityTypeNothing,
-
-    { Format: species, class }
-    EntityTypeSlimeGirl,
-    EntityTypeCultist,
-    EntityTypeSlimeCultist,
-    EntityTypeSlimeQueen
-  );
-
-  TEntity = record
-    alive: boolean;
-    body: TPhysicsBody;
-    entityType: TEntityType;
-  end;
+  P92Core, Conv, Logger, BMFont, P92Geom, P92STR, P92TEX, Timing, P92VGA, P92KBD, P92Mouse,
+  UEntity;
 
 const
   MoveSpeed = 100;
@@ -40,14 +24,6 @@ var
   entities: array[0..19] of TEntity;
   playerEntityIdx: integer;
 
-
-procedure DefaultEntity(var e: TEntity);
-begin
-  e.alive := false;
-  e.entityType := EntityTypeNothing;
-
-  FillChar(e.body, SizeOf(TPhysicsBody), 0)
-end;
 
 procedure OnPreload; far;
 begin
@@ -78,9 +54,9 @@ end;
 
 procedure OnCleanup; far;
 begin
-  { Free all the resources here }
   FreeTex(SpecimenP92[0]);
   FreeTex(SpecimenP92[1]);
+  FreeBMFont(P92SansFont);
 end;
 
 procedure Update; far;
