@@ -15,7 +15,7 @@ type
 
   TEntity = record
     alive: boolean;
-    body: TZone;
+    body: TPhysicsBody;
     entityType: TEntityType;
   end;
 
@@ -41,7 +41,7 @@ begin
   e.alive := false;
   e.entityType := EntityTypeNothing;
 
-  FillChar(e.body, SizeOf(TZone), 0)
+  FillChar(e.body, SizeOf(TPhysicsBody), 0)
 end;
 
 procedure OnPreload; far;
@@ -83,13 +83,40 @@ begin
   if IsKeyDown(SC_ESCAPE) then SignalDone;
 
   { Player movement }
-  if IsKeyDown(SC_W) then
-    entities[playerEntityIdx].body.y :=
-      entities[playerEntityIdx].body.y - MoveSpeed * DeltaTime;
+  if not IsKeyDown(SC_W) and not IsKeyDown(SC_S) then
+    entities[playerEntityIdx].body.vy := 0.0
+  else begin
+    if IsKeyDown(SC_W) then
+      entities[playerEntityIdx].body.vy := -MoveSpeed * DeltaTime;
 
-  { Handle game state updates here }
+    if IsKeyDown(SC_S) then
+      entities[playerEntityIdx].body.vy := MoveSpeed * DeltaTime;
+  end;
+
+  with entities[playerEntityIdx] do begin
+    body.y := body.y + body.vy
+  end;
+
+  if not IsKeyDown(SC_A) and not IsKeyDown(SC_D) then
+    entities[playerEntityIdx].body.vx := 0.0
+  else begin
+    if IsKeyDown(SC_A) then
+      entities[playerEntityIdx].body.vx := -MoveSpeed * DeltaTime;
+
+    if IsKeyDown(SC_D) then
+      entities[playerEntityIdx].body.vx := MoveSpeed * DeltaTime;
+  end;
+
+  with entities[playerEntityIdx] do begin
+    body.x := body.x + body.vx
+  end;
 
   t := t + DeltaTime
+end;
+
+procedure PrintDefault(const text: string; const x, y: integer);
+begin
+  PrintBMFont(P92SansFont, text, x, y)
 end;
 
 procedure Draw; far;
@@ -108,7 +135,15 @@ begin
       trunc(entities[playerEntityIdx].body.x),
       trunc(entities[playerEntityIdx].body.y));
 
-  PrintBMFont(P92SansFont, 'Mass: ' + I32Str(slimeMass), 10, 10);
+  PrintDefault('Mass: ' + I32Str(slimeMass), 10, 10);
+
+  with entities[playerEntityIdx] do
+    PrintDefault(
+      '{x=' + F32Str(body.x)
+      + ', y=' + F32Str(body.y)
+      + ', vx=' + f32str(body.vx)
+      + ', vy=' + f32str(body.vy)
+      + '}', 10, 25);
 
   s := 'Hello world!';
   w := MeasureBMFont(P92SansFont, s);
