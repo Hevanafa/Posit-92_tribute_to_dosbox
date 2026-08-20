@@ -6,6 +6,23 @@ uses
   CRT, DOS,
   P92Core, Logger, BMFont, P92STR, P92TEX, Timing, P92VGA, P92KBD, P92Mouse;
 
+type
+  TPoint = record
+    x, y: double;
+  end;
+
+  TEntityType = (
+    EntityTypeNothing,
+    EntityTypeSlimeGirl,
+    EntityTypeCultist
+  );
+
+  TEntity = record
+    alive: boolean;
+    pos: TPoint;
+    entityType: TEntityType;
+  end;
+
 var
   { Asset variables }
   P92SansFont: TBMFont;
@@ -13,7 +30,19 @@ var
 
   { Game state variables }
   t: double;
+  lastW, lastA, lastS, lastD: boolean;
 
+  entities: array[0..19] of TEntity;
+  playerEntityIdx: integer;
+
+
+procedure DefaultEntity(var e: TEntity);
+begin
+  e.alive := false;
+  e.entityType := EntityTypeNothing;
+  e.pos.x := 0.0;
+  e.pos.y := 0.0;
+end;
 
 procedure OnPreload; far;
 begin
@@ -23,9 +52,16 @@ begin
 end;
 
 procedure OnReady; far;
+var
+  a: word;
 begin
   { Init game state variables here }
   t := 0.0;
+
+  for a:=0 to high(entities) do
+    DefaultEntity(entities[a]);
+
+  playerEntityIdx := 0;
 end;
 
 procedure OnCleanup; far;
@@ -39,6 +75,8 @@ procedure Update; far;
 begin
   { Handle inputs here }
   if IsKeyDown(SC_ESCAPE) then SignalDone;
+
+  { if IsKeyDown(SC_W) then }
 
   { Handle game state updates here }
 
