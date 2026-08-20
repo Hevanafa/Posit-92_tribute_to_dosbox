@@ -23,6 +23,9 @@ type
   );
 
 var
+  lastW, lastA, lastS, lastD: boolean;
+  lastSpacebar, lastEnter: boolean;
+
   { Game state variables }
   actualGameState: TGameState;
 
@@ -30,7 +33,6 @@ var
   introSlideEndTick: double;
 
   gameTime: double;
-  lastW, lastA, lastS, lastD: boolean;
 
   slimeMass: integer;
   entities: array[0..19] of TEntity;
@@ -44,6 +46,8 @@ begin
 end;
 
 procedure BeginPlayingState;
+var
+  a: word;
 begin
   actualGameState := GameStatePlaying;
   gameTime := 0.0;
@@ -72,6 +76,8 @@ begin
   LoadTex(texSpecimenP92[1], 'IMG\SPP92_2.BMP');
 
   LoadTex(texPosit92Logo, 'IMG\POSIT92.BMP');
+  LoadTex(texLazarusLogo, 'IMG\POSIT92.BMP');
+  LoadTex(texTurboPascal, 'IMG\POSIT92.BMP');
 
   LoadBMFont(P92SansFont, 'FONTS\P92SANS.TXT');
 end;
@@ -234,23 +240,37 @@ var
   s: string;
   w: integer;
 begin
-  Cls($4F);
+  if actualGameState = GameStateIntro then begin
+    RenderIntro(introSlide);
 
-  for a:=0 to high(entities) do begin
-    if not entities[a].alive then continue;
+    { Debug intro state }
+    PrintDefault('(Intro slide ' + i32str(introSlide) + ')', 30, 30);
+    PrintDefault('Slide end tick: ' + f32str(introSlideEndTick), 30, 40);
 
-    DrawEntity(entities[a]);
+    exit
   end;
 
-  PrintDefault('Mass: ' + I32Str(slimeMass) + ' SU', 10, 10);
 
-  DrawPhysicsBody(entities[playerEntityIdx].body, $0C);
+  if actualGameState = GameStatePlaying then begin
 
-  DebugPhysicsBody(entities[playerEntityIdx].body, 10, 25);
+    Cls($4F);
 
-  s := 'Hello world!';
-  w := MeasureBMFont(P92SansFont, s);
-  PrintBMFont(P92SansFont, s, (VGAWidth - w) div 2, 120);
+    for a:=0 to high(entities) do begin
+      if not entities[a].alive then continue;
+
+      DrawEntity(entities[a]);
+    end;
+
+    PrintDefault('Mass: ' + I32Str(slimeMass) + ' SU', 10, 10);
+
+    DrawPhysicsBody(entities[playerEntityIdx].body, $0C);
+
+    DebugPhysicsBody(entities[playerEntityIdx].body, 10, 25);
+
+    s := 'Hello world!';
+    w := MeasureBMFont(P92SansFont, s);
+    PrintBMFont(P92SansFont, s, (VGAWidth - w) div 2, 120);
+  end;
 end;
 
 var
