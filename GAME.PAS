@@ -4,13 +4,9 @@ program Game;
 
 uses
   CRT, DOS,
-  P92Core, Logger, BMFont, P92STR, P92TEX, Timing, P92VGA, P92KBD, P92Mouse;
+  P92Core, Conv, Logger, BMFont, P92Geom, P92STR, P92TEX, Timing, P92VGA, P92KBD, P92Mouse;
 
 type
-  TPoint = record
-    x, y: double;
-  end;
-
   TEntityType = (
     EntityTypeNothing,
     EntityTypeSlimeGirl,
@@ -19,9 +15,12 @@ type
 
   TEntity = record
     alive: boolean;
-    pos: TPoint;
+    body: TZone;
     entityType: TEntityType;
   end;
+
+const
+  MoveSpeed = 100;
 
 var
   { Asset variables }
@@ -32,6 +31,7 @@ var
   t: double;
   lastW, lastA, lastS, lastD: boolean;
 
+  slimeMass: integer;
   entities: array[0..19] of TEntity;
   playerEntityIdx: integer;
 
@@ -40,8 +40,8 @@ procedure DefaultEntity(var e: TEntity);
 begin
   e.alive := false;
   e.entityType := EntityTypeNothing;
-  e.pos.x := 0.0;
-  e.pos.y := 0.0;
+
+  FillChar(e.body, SizeOf(TZone), 0)
 end;
 
 procedure OnPreload; far;
@@ -58,10 +58,17 @@ begin
   { Init game state variables here }
   t := 0.0;
 
+  slimeMass := 10000;
+
   for a:=0 to high(entities) do
     DefaultEntity(entities[a]);
 
   playerEntityIdx := 0;
+
+  entities[playerEntityIdx].body.x := VGAWidth / 2;
+  entities[playerEntityIdx].body.y := VGAHeight / 2;
+  entities[playerEntityIdx].body.width := 32;
+  entities[playerEntityIdx].body.height := 16;
 end;
 
 procedure OnCleanup; far;
@@ -73,10 +80,12 @@ end;
 
 procedure Update; far;
 begin
-  { Handle inputs here }
   if IsKeyDown(SC_ESCAPE) then SignalDone;
 
-  { if IsKeyDown(SC_W) then }
+  { Player movement }
+  if IsKeyDown(SC_W) then
+    entities[playerEntityIdx].body.y :=
+      entities[playerEntityIdx].body.y - MoveSpeed * DeltaTime;
 
   { Handle game state updates here }
 
@@ -91,9 +100,15 @@ begin
   Cls($4F);
 
   if frac(t * 1.5) >= 0.5 then
-    Spr(SpecimenP92[0], 148, 76)
+    Spr(SpecimenP92[1],
+      trunc(entities[playerEntityIdx].body.x),
+      trunc(entities[playerEntityIdx].body.y))
   else
-    Spr(SpecimenP92[1], 148, 76);
+    Spr(SpecimenP92[0],
+      trunc(entities[playerEntityIdx].body.x),
+      trunc(entities[playerEntityIdx].body.y));
+
+  PrintBMFont(P92SansFont, 'Mass: ' + I32Str(slimeMass), 10, 10);
 
   s := 'Hello world!';
   w := MeasureBMFont(P92SansFont, s);
