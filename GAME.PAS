@@ -44,15 +44,17 @@ begin
   { Init game state variables here }
   t := 0.0;
 
-  slimeMass := 6000;
-
   for a:=0 to high(entities) do
     DefaultEntity(entities[a]);
+
+  { Init player state }
+  slimeMass := 6000;
 
   playerEntityIdx := 0;
 
   with entities[playerEntityIdx] do begin
     alive := true;
+    entityType := EntityTypeSlimeGirl;
     body.x := VGAWidth / 2;
     body.y := VGAHeight / 2;
     body.width := 32;
@@ -158,20 +160,30 @@ begin
 end;
 
 procedure DrawEntity(const e: TEntity);
+var
+  x, y: integer;
 begin
-  Spr(SpecimenP92[0],
-    trunc(e.body.x) + trunc(e.body.width - SpecimenP92[0].width) div 2,
-    trunc(e.body.y + e.body.height) - SpecimenP92[0].height);
+  if e.entityType = EntityTypeSlimeGirl then begin
+    x := trunc(e.body.x) + trunc(e.body.width - SpecimenP92[0].width) div 2;
+    y := trunc(e.body.y + e.body.height) - SpecimenP92[0].height;
+
+    Spr(SpecimenP92[0], x, y);
+  end;
 end;
 
 procedure Draw; far;
 var
+  a: word;
   s: string;
   w: integer;
 begin
   Cls($4F);
 
-  DrawEntity(entities[playerentityIdx]);
+  for a:=0 to high(entities) do begin
+    if not entities[a].alive then continue;
+
+    DrawEntity(entities[a]);
+  end;
 
   PrintDefault('Mass: ' + I32Str(slimeMass) + ' SU', 10, 10);
 
