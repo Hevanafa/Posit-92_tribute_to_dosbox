@@ -11,6 +11,11 @@ const
   MoveSpeed = 100;
   MaxSlimeMass = 10000;
 
+  { Slime mass "taxes" }
+
+  ConversionMass = 2400;
+  ItemPickupMass = 400;
+
 var
   { Asset variables }
   P92SansFont: TBMFont;
@@ -119,6 +124,13 @@ begin
     + '}', x, y)
 end;
 
+procedure DrawEntity(const e: TEntity);
+begin
+  Spr(SpecimenP92[0],
+    trunc(e.body.x) + trunc(e.body.width - SpecimenP92[0].width) div 2,
+    trunc(e.body.y + e.body.height) - SpecimenP92[0].height);
+end;
+
 procedure Draw; far;
 var
   s: string;
@@ -126,14 +138,7 @@ var
 begin
   Cls($4F);
 
-  if frac(t * 1.5) >= 0.5 then
-    Spr(SpecimenP92[1],
-      trunc(entities[playerEntityIdx].body.x),
-      trunc(entities[playerEntityIdx].body.y))
-  else
-    Spr(SpecimenP92[0],
-      trunc(entities[playerEntityIdx].body.x),
-      trunc(entities[playerEntityIdx].body.y));
+  DrawEntity(entities[playerentityIdx]);
 
   PrintDefault('Mass: ' + I32Str(slimeMass) + ' SU', 10, 10);
 
