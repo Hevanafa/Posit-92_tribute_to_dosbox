@@ -16,32 +16,37 @@ const
   ConversionMass = 2400;
   ItemPickupMass = 400;
 
+type
+  TGameState = (
+    GameStateIntro,
+    GameStatePlaying
+  );
+
 var
   { Game state variables }
-  t: double;
+  actualGameState: TGameState;
+
+  introSlide: integer;
+  introSlideEndTick: double;
+
+  gameTime: double;
   lastW, lastA, lastS, lastD: boolean;
 
   slimeMass: integer;
   entities: array[0..19] of TEntity;
   playerEntityIdx: integer;
 
-
-procedure OnPreload; far;
+procedure BeginIntroState;
 begin
-  LoadTex(texSpecimenP92[0], 'IMG\SPP92_1.BMP');
-  LoadTex(texSpecimenP92[1], 'IMG\SPP92_2.BMP');
-
-  LoadTex(texPosit92Logo);
-
-  LoadBMFont(P92SansFont, 'FONTS\P92SANS.TXT');
+  actualGameState := GameStateIntro;
+  introSlide := 1;
+  introSlideEndTick := GetTimer + 2.0;
 end;
 
-procedure OnReady; far;
-var
-  a: word;
+procedure BeginPlayingState;
 begin
-  { Init game state variables here }
-  t := 0.0;
+  actualGameState := GameStatePlaying;
+  gameTime := 0.0;
 
   for a:=0 to high(entities) do
     DefaultEntity(entities[a]);
@@ -59,6 +64,23 @@ begin
     body.width := 32;
     body.height := 16;
   end;
+end;
+
+procedure OnPreload; far;
+begin
+  LoadTex(texSpecimenP92[0], 'IMG\SPP92_1.BMP');
+  LoadTex(texSpecimenP92[1], 'IMG\SPP92_2.BMP');
+
+  LoadTex(texPosit92Logo, 'IMG\POSIT92.BMP');
+
+  LoadBMFont(P92SansFont, 'FONTS\P92SANS.TXT');
+end;
+
+procedure OnReady; far;
+var
+  a: word;
+begin
+  BeginIntroState
 end;
 
 procedure OnCleanup; far;
@@ -91,55 +113,91 @@ end;
 
 procedure Update; far;
 var
+  shouldSkip: boolean;
   a: word;
   displacement: double;
 begin
-  if IsKeyDown(SC_ESCAPE) then SignalDone;
+  if actualGameState = GameStateIntro then begin
+    shouldSkip := false;
 
-  { Player movement }
-  if not IsUpKeyPressed and not IsDownKeyPressed then
-    entities[playerEntityIdx].body.vy := 0.0
-  else begin
-    if IsUpKeyPressed then
-      entities[playerEntityIdx].body.vy := -MoveSpeed * DeltaTime;
-
-    if IsDownKeyPressed then
-      entities[playerEntityIdx].body.vy := MoveSpeed * DeltaTime;
-  end;
-
-  if not IsLeftKeyPressed and not IsRightKeyPressed then
-    entities[playerEntityIdx].body.vx := 0.0
-  else begin
-    if IsLeftKeyPressed then
-      entities[playerEntityIdx].body.vx := -MoveSpeed * DeltaTime;
-
-    if IsRightKeyPressed then
-      entities[playerEntityIdx].body.vx := MoveSpeed * DeltaTime;
-  end;
-
-  { Commit vy }
-  for a:=0 to high(entities) do begin
-    if not entities[a].alive then continue;
-
-    with entities[a] do
-      body.y := body.y + body.vy;
-
-    if a = playerEntityIdx then begin
-      displacement := abs(entities[a].body.vx) + abs(entities[a].body.vy);
-
-      dec(slimeMass, trunc(displacement));
+    { Handle inputs }
+    if lastSpacebar <> IsKeyDown(SC_SPACE) then begin
+      lastSpacebar := IsKeyDown(SC_SPACE);
+      if lastSpacebar then shouldSkip := true
     end;
+
+    if lastEnter <> IsKeyDown(SC_ENTER) then begin
+      lastEnter := IsKeyDown(SC_ENTER);
+      if lastEnter then shouldSkip := true
+    end;
+
+    { Handle next slide }
+    if GetTimer >= introSlideEndTick then
+      shouldSkip := true;
+
+    if shouldSkip then begin
+      introSlideEndTick := GetTimer + 2.0;
+      inc(introSlide);
+    end;
+
+    if introSlide > IntroSlides then begin
+      UnloadIntro;
+      BeginPlayingState
+    end;
+
+    exit
   end;
 
-  { Commit vx }
-  for a:=0 to high(entities) do begin
-    if not entities[a].alive then continue;
 
-    with entities[a] do
-      body.x := body.x + body.vx;
-  end;
+  if actualGameState = GameStatePlaying then begin
 
-  t := t + DeltaTime
+    if IsKeyDown(SC_ESCAPE) then SignalDone;
+
+    { Player movement }
+    if not IsUpKeyPressed and not IsDownKeyPressed then
+      entities[playerEntityIdx].body.vy := 0.0
+    else begin
+      if IsUpKeyPressed then
+        entities[playerEntityIdx].body.vy := -MoveSpeed * DeltaTime;
+
+      if IsDownKeyPressed then
+        entities[playerEntityIdx].body.vy := MoveSpeed * DeltaTime;
+    end;
+
+    if not IsLeftKeyPressed and not IsRightKeyPressed then
+      entities[playerEntityIdx].body.vx := 0.0
+    else begin
+      if IsLeftKeyPressed then
+        entities[playerEntityIdx].body.vx := -MoveSpeed * DeltaTime;
+
+      if IsRightKeyPressed then
+        entities[playerEntityIdx].body.vx := MoveSpeed * DeltaTime;
+    end;
+
+    { Commit vy }
+    for a:=0 to high(entities) do begin
+      if not entities[a].alive then continue;
+
+      with entities[a] do
+        body.y := body.y + body.vy;
+
+      if a = playerEntityIdx then begin
+        displacement := abs(entities[a].body.vx) + abs(entities[a].body.vy);
+
+        dec(slimeMass, trunc(displacement));
+      end;
+    end;
+
+    { Commit vx }
+    for a:=0 to high(entities) do begin
+      if not entities[a].alive then continue;
+
+      with entities[a] do
+        body.x := body.x + body.vx;
+    end;
+
+    gameTime := gameTime + DeltaTime
+  end
 end;
 
 procedure PrintDefault(const text: string; const x, y: integer);
