@@ -5,7 +5,7 @@ program Game;
 uses
   CRT, DOS,
   P92Core, Conv, Logger, BMFont, P92Geom, P92STR, P92TEX, Timing, P92VGA, P92KBD, P92Mouse,
-  UEntity, UIntro;
+  UAssets, UEntity, UIntro;
 
 const
   MoveSpeed = 100;
@@ -17,11 +17,6 @@ const
   ItemPickupMass = 400;
 
 var
-  { Asset variables }
-  P92SansFont: TBMFont;
-  texSpecimenP92: array[0..1] of TTexture;
-
-
   { Game state variables }
   t: double;
   lastW, lastA, lastS, lastD: boolean;

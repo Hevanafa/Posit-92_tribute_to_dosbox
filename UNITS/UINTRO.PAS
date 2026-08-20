@@ -26,7 +26,15 @@ procedure UnloadIntro;
 implementation
 
 uses
-  P92VGA;
+  P92VGA, BMFont, UAssets;
+
+procedure PrintDefaultCentred(const text: string; const x, y: integer);
+var
+  w: word;
+begin
+  w := MeasureBMFont(P92SansFont, text);
+  PrintBMFont(P92SansFont, text, x - w div 2, y)
+end;
 
 procedure RenderIntro(const introSlide: integer);
 begin
@@ -49,16 +57,13 @@ begin
       PrintDefaultCentred('Turbo Pascal 7.0', 212, 144);
     end;
   end;
-
-  VgaUpload;
-  VgaPresent
 end;
 
 procedure UnloadIntro;
 begin
-  FreeTexture(texPosit92Logo);
-  FreeTexture(texFPCLogo);
-  FreeTexture(texWasmLogo);
+  FreeTex(texPosit92Logo);
+  FreeTex(texLazarusLogo);
+  FreeTex(texTurboPascal);
 end;
 
 end.
