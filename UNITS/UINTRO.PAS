@@ -7,45 +7,46 @@
 
 unit UIntro;
 
-{$Mode ObjFPC}
-{$H+}{$J-}
+{$IFDEF FPC}{$Mode ObjFPC}{$H+}{$J-}{$ENDIF}
 
 interface
+
+uses P92TEX;
 
 const
   IntroSlides = 2;
 
 var
-  imgPosit92Logo, imgFPCLogo, imgWasmLogo: longint;
+  texPosit92Logo, texLazarusLogo, texTurboPascal: TTexture;
 
-procedure RenderIntro(const introSlide: smallint);
+procedure RenderIntro(const introSlide: integer);
 procedure UnloadIntro;
 
 
 implementation
 
 uses
-  P92Fonts, P92Tex, P92TexDraw, P92VGA;
+  P92VGA;
 
-procedure RenderIntro(const introSlide: smallint);
+procedure RenderIntro(const introSlide: integer);
 begin
-  cls($00000000);
+  Cls($00);
 
   case introSlide of
     1: begin
-      Spr(imgPosit92Logo, 144, 84);
+      Spr(texPosit92Logo, 144, 84);
       PrintDefaultCentred('Made with Posit-92', vgaWidth div 2, 126)
     end;
 
     2: begin
       PrintDefaultCentred('Made with', vgaWidth div 2, 44);
 
-      Spr(imgFPCLogo, 75, 67);
-      Spr(imgWasmLogo, 180, 67);
+      Spr(texLazarusLogo, 75, 67);
+      Spr(texTurboPascal, 180, 67);
 
-      PrintDefaultCentred('Free Pascal', 108, 144);
-      PrintDefaultCentred('Compiler', 108, 154);
-      PrintDefaultCentred('WebAssembly', 212, 144);
+      PrintDefaultCentred('Lazarus IDE', 108, 144);
+      PrintDefaultCentred('', 108, 154);
+      PrintDefaultCentred('Turbo Pascal 7.0', 212, 144);
     end;
   end;
 
@@ -55,9 +56,9 @@ end;
 
 procedure UnloadIntro;
 begin
-  FreeTexture(imgPosit92Logo);
-  FreeTexture(imgFPCLogo);
-  FreeTexture(imgWasmLogo);
+  FreeTexture(texPosit92Logo);
+  FreeTexture(texFPCLogo);
+  FreeTexture(texWasmLogo);
 end;
 
 end.

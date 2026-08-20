@@ -19,7 +19,8 @@ const
 var
   { Asset variables }
   P92SansFont: TBMFont;
-  SpecimenP92: array[0..1] of TTexture;
+  texSpecimenP92: array[0..1] of TTexture;
+
 
   { Game state variables }
   t: double;
@@ -32,8 +33,11 @@ var
 
 procedure OnPreload; far;
 begin
-  LoadTex(SpecimenP92[0], 'IMG\SPP92_1.BMP');
-  LoadTex(SpecimenP92[1], 'IMG\SPP92_2.BMP');
+  LoadTex(texSpecimenP92[0], 'IMG\SPP92_1.BMP');
+  LoadTex(texSpecimenP92[1], 'IMG\SPP92_2.BMP');
+
+  LoadTex(texPosit92Logo);
+
   LoadBMFont(P92SansFont, 'FONTS\P92SANS.TXT');
 end;
 
@@ -64,8 +68,8 @@ end;
 
 procedure OnCleanup; far;
 begin
-  FreeTex(SpecimenP92[0]);
-  FreeTex(SpecimenP92[1]);
+  FreeTex(texSpecimenP92[0]);
+  FreeTex(texSpecimenP92[1]);
   FreeBMFont(P92SansFont);
 end;
 
@@ -164,10 +168,10 @@ var
   x, y: integer;
 begin
   if e.entityType = EntityTypeSlimeGirl then begin
-    x := trunc(e.body.x) + trunc(e.body.width - SpecimenP92[0].width) div 2;
-    y := trunc(e.body.y + e.body.height) - SpecimenP92[0].height;
+    x := trunc(e.body.x) + trunc(e.body.width - texSpecimenP92[0].width) div 2;
+    y := trunc(e.body.y + e.body.height) - texSpecimenP92[0].height;
 
-    Spr(SpecimenP92[0], x, y);
+    Spr(texSpecimenP92[0], x, y);
   end;
 end;
 
