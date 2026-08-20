@@ -51,10 +51,13 @@ begin
 
   playerEntityIdx := 0;
 
-  entities[playerEntityIdx].body.x := VGAWidth / 2;
-  entities[playerEntityIdx].body.y := VGAHeight / 2;
-  entities[playerEntityIdx].body.width := 32;
-  entities[playerEntityIdx].body.height := 16;
+  with entities[playerEntityIdx] do begin
+    alive := true;
+    body.x := VGAWidth / 2;
+    body.y := VGAHeight / 2;
+    body.width := 32;
+    body.height := 16;
+  end;
 end;
 
 procedure OnCleanup; far;
@@ -87,6 +90,7 @@ end;
 
 procedure Update; far;
 var
+  a: word;
   displacement: double;
 begin
   if IsKeyDown(SC_ESCAPE) then SignalDone;
@@ -102,10 +106,6 @@ begin
       entities[playerEntityIdx].body.vy := MoveSpeed * DeltaTime;
   end;
 
-  with entities[playerEntityIdx] do begin
-    body.y := body.y + body.vy
-  end;
-
   if not IsLeftKeyPressed and not IsRightKeyPressed then
     entities[playerEntityIdx].body.vx := 0.0
   else begin
@@ -116,14 +116,26 @@ begin
       entities[playerEntityIdx].body.vx := MoveSpeed * DeltaTime;
   end;
 
-  with entities[playerEntityIdx] do begin
-    body.x := body.x + body.vx
+  { Commit vy }
+  for a:=0 to high(entities) do begin
+    if not entities[a].alive then continue;
+
+    with entities[a] do
+      body.y := body.y + body.vy;
+
+    if a = playerEntityIdx then begin
+      displacement := abs(entities[a].body.vx) + abs(entities[a].body.vy);
+
+      dec(slimeMass, trunc(displacement));
+    end;
   end;
 
-  with entities[playerEntityIdx] do begin
-    displacement := abs(body.vx) + abs(body.vy);
+  { Commit vx }
+  for a:=0 to high(entities) do begin
+    if not entities[a].alive then continue;
 
-    dec(slimeMass, trunc(displacement));
+    with entities[a] do
+      body.x := body.x + body.vx;
   end;
 
   t := t + DeltaTime
