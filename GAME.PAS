@@ -64,6 +64,27 @@ begin
   FreeBMFont(P92SansFont);
 end;
 
+function IsRightKeyPressed: boolean;
+begin
+  IsRightKeyPressed := IsKeyDown(SC_D) or IsKeyDown(SC_RIGHT)
+end;
+
+function IsLeftKeyPressed: boolean;
+begin
+  IsLeftKeyPressed := IsKeyDown(SC_A) or IsKeyDown(SC_LEFT)
+end;
+
+function IsUpKeyPressed: boolean;
+begin
+  IsUpKeyPressed := IsKeyDown(SC_W) or IsKeyDown(SC_UP)
+end;
+
+function IsDownKeyPressed: boolean;
+begin
+  IsDownKeyPressed := IsKeyDown(SC_S) or IsKeyDown(SC_DOWN)
+end;
+
+
 procedure Update; far;
 var
   displacement: double;
@@ -71,13 +92,13 @@ begin
   if IsKeyDown(SC_ESCAPE) then SignalDone;
 
   { Player movement }
-  if not IsKeyDown(SC_W) and not IsKeyDown(SC_S) then
+  if not IsUpKeyPressed and not IsDownKeyPressed then
     entities[playerEntityIdx].body.vy := 0.0
   else begin
-    if IsKeyDown(SC_W) then
+    if IsUpKeyPressed then
       entities[playerEntityIdx].body.vy := -MoveSpeed * DeltaTime;
 
-    if IsKeyDown(SC_S) then
+    if IsDownKeyPressed then
       entities[playerEntityIdx].body.vy := MoveSpeed * DeltaTime;
   end;
 
@@ -85,13 +106,13 @@ begin
     body.y := body.y + body.vy
   end;
 
-  if not IsKeyDown(SC_A) and not IsKeyDown(SC_D) then
+  if not IsLeftKeyPressed and not IsRightKeyPressed then
     entities[playerEntityIdx].body.vx := 0.0
   else begin
-    if IsKeyDown(SC_A) then
+    if IsLeftKeyPressed then
       entities[playerEntityIdx].body.vx := -MoveSpeed * DeltaTime;
 
-    if IsKeyDown(SC_D) then
+    if IsRightKeyPressed then
       entities[playerEntityIdx].body.vx := MoveSpeed * DeltaTime;
   end;
 
