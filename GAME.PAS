@@ -21,6 +21,7 @@ type
 
 const
   MoveSpeed = 100;
+  MaxSlimeMass = 10000;
 
 var
   { Asset variables }
@@ -58,7 +59,7 @@ begin
   { Init game state variables here }
   t := 0.0;
 
-  slimeMass := 10000;
+  slimeMass := 6000;
 
   for a:=0 to high(entities) do
     DefaultEntity(entities[a]);
@@ -79,6 +80,8 @@ begin
 end;
 
 procedure Update; far;
+var
+  displacement: double;
 begin
   if IsKeyDown(SC_ESCAPE) then SignalDone;
 
@@ -111,6 +114,12 @@ begin
     body.x := body.x + body.vx
   end;
 
+  with entities[playerEntityIdx] do begin
+    displacement := abs(body.vx) + abs(body.vy);
+
+    dec(slimeMass, trunc(displacement));
+  end;
+
   t := t + DeltaTime
 end;
 
@@ -135,7 +144,9 @@ begin
       trunc(entities[playerEntityIdx].body.x),
       trunc(entities[playerEntityIdx].body.y));
 
-  PrintDefault('Mass: ' + I32Str(slimeMass), 10, 10);
+  PrintDefault('Mass: ' + I32Str(slimeMass) + ' SU', 10, 10);
+
+  DrawPhysicsBody(entities[playerEntityIdx].body, $0C);
 
   with entities[playerEntityIdx] do
     PrintDefault(
