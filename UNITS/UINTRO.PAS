@@ -43,17 +43,17 @@ begin
   case introSlide of
     1: begin
       Spr(texPosit92Logo, 144, 84);
-      PrintDefaultCentred('Made with Posit-92', vgaWidth div 2, 126)
+      PrintDefaultCentred('Made with', VGAWidth div 2, 126);
+      PrintDefaultCentred('Posit-92 (DOS)', VGAWidth div 2, 126 + P92SansFont.lineHeight);
     end;
 
     2: begin
-      PrintDefaultCentred('Made with', vgaWidth div 2, 44);
+      PrintDefaultCentred('Made with', VGAWidth div 2, 44);
 
       Spr(texLazarusLogo, 75, 67);
       Spr(texTurboPascal, 180, 67);
 
       PrintDefaultCentred('Lazarus IDE', 108, 144);
-      PrintDefaultCentred('', 108, 154);
       PrintDefaultCentred('Turbo Pascal 7.0', 212, 144);
     end;
   end;
