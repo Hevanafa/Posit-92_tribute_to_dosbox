@@ -49,8 +49,8 @@ begin
     2: begin
       PrintDefaultCentred('Made with', vgaWidth div 2, 44);
 
-      Spr(texLazarusLogo, 75, 67);
-      Spr(texTurboPascal, 180, 67);
+      SprScaled(texLazarusLogo, 75, 67, 2);
+      SprScaled(texTurboPascal, 180, 67, 2);
 
       PrintDefaultCentred('Lazarus IDE', 108, 144);
       PrintDefaultCentred('', 108, 154);
